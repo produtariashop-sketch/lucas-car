@@ -98,7 +98,6 @@ export default function VehiclesPage() {
 
   async function remove() {
     if (!deleteId) return
-    // Check for linked quotes
     const { count } = await supabase
       .from('orcamentos')
       .select('id', { count: 'exact', head: true })
@@ -117,16 +116,18 @@ export default function VehiclesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
               Veícu<span className="text-neon-green">los</span>
             </h1>
-            <p className="mt-1 text-sm text-metallic-silver">Cadastro de veículos</p>
+            <p className="mt-0.5 text-sm text-metallic-silver">Cadastro de veículos</p>
           </div>
-          <Button className="neon-button" onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" /> Novo Veículo
+          <Button className="neon-button shrink-0" onClick={openAdd}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            <span className="hidden sm:inline">Novo Veículo</span>
+            <span className="sm:hidden">Novo</span>
           </Button>
         </div>
 
@@ -142,63 +143,101 @@ export default function VehiclesPage() {
           </div>
         </div>
 
-        <div className="neon-card">
-          {loading ? (
-            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
-          ) : filtered.length === 0 ? (
-            <p className="text-center text-sm text-metallic-silver py-8">Nenhum veículo encontrado.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    {['Veículo', 'Ano', 'Placa', 'Cor', 'Proprietário', ''].map(h => (
-                      <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filtered.map(v => {
-                    const cli = (v as any).clientes
-                    return (
-                      <tr key={v.id} className="group hover:bg-secondary/50 transition-colors">
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
-                              <Car className="h-5 w-5 text-neon-green" />
+        {loading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-sm text-metallic-silver py-12">Nenhum veículo encontrado.</p>
+        ) : (
+          <>
+            {/* Desktop table */}
+            <div className="neon-card hidden md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      {['Veículo', 'Ano', 'Placa', 'Cor', 'Proprietário', ''].map(h => (
+                        <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filtered.map(v => {
+                      const cli = (v as any).clientes
+                      return (
+                        <tr key={v.id} className="group hover:bg-secondary/50 transition-colors">
+                          <td className="py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
+                                <Car className="h-5 w-5 text-neon-green" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-foreground">{v.marca}</p>
+                                <p className="text-sm text-metallic-silver">{v.modelo}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-semibold text-foreground">{v.marca}</p>
-                              <p className="text-sm text-metallic-silver">{v.modelo}</p>
+                          </td>
+                          <td className="py-4 text-sm text-foreground">{v.ano ?? '—'}</td>
+                          <td className="py-4 text-sm font-semibold text-neon-green">{v.placa ?? '—'}</td>
+                          <td className="py-4 text-sm text-metallic-silver">{v.cor ?? '—'}</td>
+                          <td className="py-4 text-sm text-foreground">{cli?.nome ?? '—'}</td>
+                          <td className="py-4">
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(v)}>
+                                <Pencil className="h-4 w-4 text-metallic-silver" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteId(v.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
                             </div>
-                          </div>
-                        </td>
-                        <td className="py-4 text-sm text-foreground">{v.ano ?? '—'}</td>
-                        <td className="py-4 text-sm font-semibold text-neon-green">{v.placa ?? '—'}</td>
-                        <td className="py-4 text-sm text-metallic-silver">{v.cor ?? '—'}</td>
-                        <td className="py-4 text-sm text-foreground">{cli?.nome ?? '—'}</td>
-                        <td className="py-4">
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(v)}>
-                              <Pencil className="h-4 w-4 text-metallic-silver" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteId(v.id)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {filtered.map(v => {
+                const cli = (v as any).clientes
+                return (
+                  <div key={v.id} className="neon-card">
+                    <div className="flex items-center gap-3">
+                      <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
+                        <Car className="h-5 w-5 text-neon-green" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-foreground">{v.marca} {v.modelo}</p>
+                          {v.placa && <span className="text-xs font-semibold text-neon-green">{v.placa}</span>}
+                        </div>
+                        <div className="flex gap-3 mt-0.5 text-xs text-metallic-silver">
+                          {v.ano && <span>{v.ano}</span>}
+                          {v.cor && <span>{v.cor}</span>}
+                          {cli?.nome && <span>{cli.nome}</span>}
+                        </div>
+                      </div>
+                      <div className="shrink-0 flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => openEdit(v)}>
+                          <Pencil className="h-4 w-4 text-metallic-silver" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setDeleteId(v.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <DialogHeader>
             <DialogTitle className="text-foreground uppercase tracking-wide">
               {editId ? 'Editar Veículo' : 'Novo Veículo'}
@@ -225,7 +264,7 @@ export default function VehiclesPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-metallic-silver">Ano</Label>
-                <Input className="neon-input" value={form.ano} onChange={e => setForm(f => ({ ...f, ano: e.target.value }))} />
+                <Input className="neon-input" type="number" value={form.ano} onChange={e => setForm(f => ({ ...f, ano: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label className="text-metallic-silver">Placa</Label>
@@ -237,9 +276,9 @@ export default function VehiclesPage() {
               <Input className="neon-input" value={form.cor} onChange={e => setForm(f => ({ ...f, cor: e.target.value }))} />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" className="neon-button-outline" onClick={() => setDialog(false)}>Cancelar</Button>
-            <Button className="neon-button" onClick={save} disabled={saving}>
+          <DialogFooter className="flex-row gap-3 mt-2">
+            <Button variant="outline" className="neon-button-outline flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
+            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
             </Button>
           </DialogFooter>
@@ -247,14 +286,14 @@ export default function VehiclesPage() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir veículo?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">Esta ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90" onClick={remove}>Excluir</AlertDialogAction>
+          <AlertDialogFooter className="flex-row gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]" onClick={remove}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

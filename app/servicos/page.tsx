@@ -95,80 +95,123 @@ export default function ServicosPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
               Servi<span className="text-neon-green">ços</span>
             </h1>
-            <p className="mt-1 text-sm text-metallic-silver">Catálogo de serviços da oficina</p>
+            <p className="mt-0.5 text-sm text-metallic-silver">Catálogo de serviços da oficina</p>
           </div>
-          <Button className="neon-button" onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" /> Novo Serviço
+          <Button className="neon-button shrink-0" onClick={openAdd}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            <span className="hidden sm:inline">Novo Serviço</span>
+            <span className="sm:hidden">Novo</span>
           </Button>
         </div>
 
-        <div className="neon-card">
-          {loading ? (
-            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
-          ) : servicos.length === 0 ? (
-            <p className="text-center text-sm text-metallic-silver py-8">Nenhum serviço cadastrado.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    {['Serviço', 'Valor Padrão', 'Prazo', 'Status', ''].map(h => (
-                      <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {servicos.map(s => (
-                    <tr key={s.id} className="group hover:bg-secondary/50 transition-colors">
-                      <td className="py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
-                            <Wrench className="h-5 w-5 text-neon-green" />
-                          </div>
-                          <div>
-                            <p className="font-semibold text-foreground">{s.nome}</p>
-                            {s.descricao && <p className="text-xs text-metallic-silver">{s.descricao}</p>}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 text-sm font-semibold text-neon-green">{fmt(s.valor_padrao)}</td>
-                      <td className="py-4 text-sm text-metallic-silver">{s.prazo_dias}d</td>
-                      <td className="py-4">
-                        <button onClick={() => toggleAtivo(s)} className="flex items-center gap-1">
-                          {s.ativo ? (
-                            <><ToggleRight className="h-5 w-5 text-neon-green" /><span className="text-xs text-neon-green">Ativo</span></>
-                          ) : (
-                            <><ToggleLeft className="h-5 w-5 text-metallic-silver" /><span className="text-xs text-metallic-silver">Inativo</span></>
-                          )}
-                        </button>
-                      </td>
-                      <td className="py-4">
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(s)}>
-                            <Pencil className="h-4 w-4 text-metallic-silver" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteId(s.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </td>
+        {loading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
+        ) : servicos.length === 0 ? (
+          <p className="text-center text-sm text-metallic-silver py-12">Nenhum serviço cadastrado.</p>
+        ) : (
+          <>
+            {/* Desktop table */}
+            <div className="neon-card hidden md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      {['Serviço', 'Valor Padrão', 'Prazo', 'Status', ''].map(h => (
+                        <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {servicos.map(s => (
+                      <tr key={s.id} className="group hover:bg-secondary/50 transition-colors">
+                        <td className="py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
+                              <Wrench className="h-5 w-5 text-neon-green" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-foreground">{s.nome}</p>
+                              {s.descricao && <p className="text-xs text-metallic-silver">{s.descricao}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 text-sm font-semibold text-neon-green">{fmt(s.valor_padrao)}</td>
+                        <td className="py-4 text-sm text-metallic-silver">{s.prazo_dias}d</td>
+                        <td className="py-4">
+                          <button onClick={() => toggleAtivo(s)} className="flex items-center gap-1">
+                            {s.ativo ? (
+                              <><ToggleRight className="h-5 w-5 text-neon-green" /><span className="text-xs text-neon-green">Ativo</span></>
+                            ) : (
+                              <><ToggleLeft className="h-5 w-5 text-metallic-silver" /><span className="text-xs text-metallic-silver">Inativo</span></>
+                            )}
+                          </button>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(s)}>
+                              <Pencil className="h-4 w-4 text-metallic-silver" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteId(s.id)}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {servicos.map(s => (
+                <div key={s.id} className="neon-card">
+                  <div className="flex items-center gap-3">
+                    <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-sm border border-neon-green/30 bg-neon-green/10">
+                      <Wrench className="h-5 w-5 text-neon-green" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-foreground truncate">{s.nome}</p>
+                      {s.descricao && <p className="text-xs text-metallic-silver truncate">{s.descricao}</p>}
+                    </div>
+                    <div className="shrink-0 flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => openEdit(s)}>
+                        <Pencil className="h-4 w-4 text-metallic-silver" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setDeleteId(s.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
+                    <div className="flex gap-4 text-sm">
+                      <span className="font-semibold text-neon-green">{fmt(s.valor_padrao)}</span>
+                      <span className="text-metallic-silver">{s.prazo_dias} dias</span>
+                    </div>
+                    <button onClick={() => toggleAtivo(s)} className="flex items-center gap-1.5 min-h-[44px] px-2">
+                      {s.ativo ? (
+                        <><ToggleRight className="h-5 w-5 text-neon-green" /><span className="text-xs text-neon-green">Ativo</span></>
+                      ) : (
+                        <><ToggleLeft className="h-5 w-5 text-metallic-silver" /><span className="text-xs text-metallic-silver">Inativo</span></>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <DialogHeader>
             <DialogTitle className="text-foreground uppercase tracking-wide">
               {editId ? 'Editar Serviço' : 'Novo Serviço'}
@@ -194,9 +237,9 @@ export default function ServicosPage() {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" className="neon-button-outline" onClick={() => setDialog(false)}>Cancelar</Button>
-            <Button className="neon-button" onClick={save} disabled={saving}>
+          <DialogFooter className="flex-row gap-3 mt-2">
+            <Button variant="outline" className="neon-button-outline flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
+            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
             </Button>
           </DialogFooter>
@@ -204,14 +247,14 @@ export default function ServicosPage() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir serviço?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">Esta ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90" onClick={remove}>Excluir</AlertDialogAction>
+          <AlertDialogFooter className="flex-row gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]" onClick={remove}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -75,87 +75,117 @@ export function DashboardStats() {
   const cards = [
     { title: 'Total de Orçamentos', value: loading ? '—' : String(stats.total), icon: FileText },
     { title: 'Pendentes', value: loading ? '—' : String(stats.pendentes), icon: Clock },
-    { title: 'Aprovados este Mês', value: loading ? '—' : String(stats.aprovados_mes), icon: CheckCircle },
-    { title: 'Receita (aprovados)', value: loading ? '—' : fmt(stats.receita), icon: DollarSign },
+    { title: 'Aprovados (mês)', value: loading ? '—' : String(stats.aprovados_mes), icon: CheckCircle },
+    { title: 'Receita', value: loading ? '—' : fmt(stats.receita), icon: DollarSign },
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+        <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
           Dash<span className="text-neon-green">board</span>
         </h1>
         <p className="mt-1 text-sm text-metallic-silver">Visão geral do seu negócio</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Stats grid — 2 cols on mobile, 4 on large */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map(c => (
           <div key={c.title} className="neon-card group hover:border-neon-green/50 transition-colors">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-metallic-silver">{c.title}</p>
-                <p className="mt-2 text-2xl font-bold text-foreground">{c.value}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-metallic-silver leading-tight">{c.title}</p>
+                <p className="mt-1.5 text-xl md:text-2xl font-bold text-foreground truncate">{c.value}</p>
               </div>
-              <div className="rounded-sm border border-neon-green/30 bg-neon-green/10 p-2">
-                <c.icon className="h-5 w-5 text-neon-green" />
+              <div className="shrink-0 rounded-sm border border-neon-green/30 bg-neon-green/10 p-1.5 md:p-2">
+                <c.icon className="h-4 w-4 md:h-5 md:w-5 text-neon-green" />
               </div>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Recent quotes */}
       <div className="neon-card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">Orçamentos Recentes</h2>
+          <h2 className="text-base md:text-lg font-bold uppercase tracking-wide text-foreground">Orçamentos Recentes</h2>
           <Link href="/orcamentos" className="text-sm font-medium text-neon-green hover:underline">Ver todos</Link>
         </div>
+
         {loading ? (
           <p className="text-sm text-metallic-silver">Carregando...</p>
         ) : recent.length === 0 ? (
           <p className="text-sm text-metallic-silver">Nenhum orçamento cadastrado.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  {['Cliente', 'Veículo', 'Valor', 'Status'].map(h => (
-                    <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {recent.map(o => {
-                  const cli = (o as any).clientes
-                  const vei = (o as any).veiculos
-                  return (
-                    <tr key={o.id} className="hover:bg-secondary/50 transition-colors">
-                      <td className="py-3 text-sm text-foreground">{cli?.nome ?? '—'}</td>
-                      <td className="py-3 text-sm text-metallic-silver">
-                        {vei ? `${vei.marca} ${vei.modelo} ${vei.ano ?? ''}`.trim() : '—'}
-                      </td>
-                      <td className="py-3 text-sm font-semibold text-foreground">{fmt(Number(o.valor_total))}</td>
-                      <td className="py-3"><StatusBadge status={o.status} /></td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    {['Cliente', 'Veículo', 'Valor', 'Status'].map(h => (
+                      <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recent.map(o => {
+                    const cli = (o as any).clientes
+                    const vei = (o as any).veiculos
+                    return (
+                      <tr key={o.id} className="hover:bg-secondary/50 transition-colors">
+                        <td className="py-3 text-sm text-foreground">{cli?.nome ?? '—'}</td>
+                        <td className="py-3 text-sm text-metallic-silver">
+                          {vei ? `${vei.marca} ${vei.modelo} ${vei.ano ?? ''}`.trim() : '—'}
+                        </td>
+                        <td className="py-3 text-sm font-semibold text-foreground">{fmt(Number(o.valor_total))}</td>
+                        <td className="py-3"><StatusBadge status={o.status} /></td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {recent.map(o => {
+                const cli = (o as any).clientes
+                const vei = (o as any).veiculos
+                return (
+                  <Link key={o.id} href={`/orcamentos/${o.id}`}>
+                    <div className="flex items-center justify-between rounded-sm border border-border bg-secondary/30 px-3 py-3 active:bg-secondary/60">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm text-foreground truncate">{cli?.nome ?? '—'}</p>
+                        <p className="text-xs text-metallic-silver truncate">
+                          {vei ? `${vei.marca} ${vei.modelo}` : '—'}
+                        </p>
+                      </div>
+                      <div className="shrink-0 ml-3 text-right">
+                        <p className="font-bold text-sm text-foreground">{fmt(Number(o.valor_total))}</p>
+                        <StatusBadge status={o.status} />
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </>
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:gap-4 md:grid-cols-2">
         <div className="neon-card">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-3">
             <Users className="h-5 w-5 text-neon-green" />
-            <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">Total de Clientes</h2>
+            <h2 className="text-base font-bold uppercase tracking-wide text-foreground">Total de Clientes</h2>
           </div>
           <span className="text-4xl font-bold text-foreground">{loading ? '—' : stats.total_clientes}</span>
         </div>
         <div className="neon-card">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-5 w-5 text-neon-green" />
-            <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">Taxa de Conversão</h2>
+            <h2 className="text-base font-bold uppercase tracking-wide text-foreground">Taxa de Conversão</h2>
           </div>
           <span className="text-4xl font-bold text-foreground">{loading ? '—' : `${stats.taxa_conversao}%`}</span>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary">

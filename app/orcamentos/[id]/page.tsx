@@ -229,32 +229,33 @@ export default function OrcamentoDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Top bar */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => router.back()} className="text-metallic-silver hover:text-foreground">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-metallic-silver hover:text-foreground shrink-0">
+              <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold uppercase tracking-wider text-foreground">
+              <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wider text-foreground">
                 Orça<span className="text-neon-green">mento</span>{" "}
                 <span className="font-mono text-neon-green">#{shortId}</span>
               </h1>
               <p className="text-xs text-metallic-silver">{dataEmissao}</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          {/* Action buttons — 2x2 grid on mobile */}
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <Button
               variant="ghost"
-              className="neon-button-outline"
+              className="neon-button-outline min-h-[44px]"
               onClick={() => router.push(`/orcamentos/${id}/editar`)}
             >
               <Pencil className="mr-2 h-4 w-4" /> Editar
             </Button>
             <Button
               variant="ghost"
-              className="border border-destructive/50 text-destructive hover:bg-destructive/10"
+              className="border border-destructive/50 text-destructive hover:bg-destructive/10 min-h-[44px]"
               onClick={() => setShowDelete(true)}
             >
               <Trash2 className="mr-2 h-4 w-4" /> Excluir
@@ -262,16 +263,16 @@ export default function OrcamentoDetailPage() {
             <Button
               onClick={handleDownloadPDF}
               disabled={generatingPdf}
-              className="neon-button"
+              className="neon-button min-h-[44px]"
             >
               {generatingPdf ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <FileDown className="mr-2 h-4 w-4" />
               )}
-              Gerar PDF
+              PDF
             </Button>
-            <Button onClick={handleWhatsApp} className="neon-button-outline">
+            <Button onClick={handleWhatsApp} className="neon-button-outline min-h-[44px]">
               <MessageCircle className="mr-2 h-4 w-4" />
               WhatsApp
             </Button>
@@ -279,7 +280,7 @@ export default function OrcamentoDetailPage() {
         </div>
 
         {/* Status + validity bar */}
-        <div className="neon-card flex flex-wrap items-center gap-6">
+        <div className="neon-card flex flex-wrap items-center gap-4 md:gap-6">
           <div className="flex items-center gap-2">
             <Tag className="h-4 w-4 text-neon-green" />
             <span className="text-xs text-metallic-silver uppercase tracking-wider">Status</span>
@@ -365,22 +366,19 @@ export default function OrcamentoDetailPage() {
           </div>
         </div>
 
-        {/* Items table */}
+        {/* Items */}
         <div className="neon-card">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-neon-green">
             Serviços
           </h2>
-          <div className="overflow-x-auto">
+
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
                   {["Descrição", "Qtd", "Valor Unit.", "Subtotal"].map((h) => (
-                    <th
-                      key={h}
-                      className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver last:text-right"
-                    >
-                      {h}
-                    </th>
+                    <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver last:text-right">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -390,28 +388,39 @@ export default function OrcamentoDetailPage() {
                     <td className="py-3 text-sm text-foreground">{item.descricao}</td>
                     <td className="py-3 text-sm text-metallic-silver">{item.quantidade}</td>
                     <td className="py-3 text-sm text-metallic-silver">{fmt(Number(item.valor_unitario))}</td>
-                    <td className="py-3 text-right text-sm font-semibold text-foreground">
-                      {fmt(Number(item.valor_total))}
-                    </td>
+                    <td className="py-3 text-right text-sm font-semibold text-foreground">{fmt(Number(item.valor_total))}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
+          {/* Mobile item cards */}
+          <div className="md:hidden space-y-2">
+            {itens.map((item) => (
+              <div key={item.id} className="rounded-sm border border-border bg-secondary/30 px-3 py-2.5">
+                <p className="text-sm font-semibold text-foreground">{item.descricao}</p>
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs text-metallic-silver">Qtd: {item.quantidade} × {fmt(Number(item.valor_unitario))}</span>
+                  <span className="text-sm font-bold text-foreground">{fmt(Number(item.valor_total))}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Totals */}
-          <div className="mt-4 flex flex-col items-end gap-1 border-t border-border pt-4">
-            <div className="flex w-64 justify-between text-sm">
+          <div className="mt-4 border-t border-border pt-4 space-y-1">
+            <div className="flex justify-between text-sm">
               <span className="text-metallic-silver">Subtotal</span>
               <span className="text-foreground">{fmt(subtotal)}</span>
             </div>
             {desconto > 0 && (
-              <div className="flex w-64 justify-between text-sm">
+              <div className="flex justify-between text-sm">
                 <span className="text-metallic-silver">Desconto</span>
                 <span className="text-red-400">- {fmt(desconto)}</span>
               </div>
             )}
-            <div className="mt-1 flex w-64 justify-between border-t border-border pt-2">
+            <div className="flex justify-between border-t border-border pt-2 mt-1">
               <span className="text-base font-bold text-foreground">Total</span>
               <span className="text-base font-bold text-neon-green">{fmt(total)}</span>
             </div>
@@ -431,17 +440,17 @@ export default function OrcamentoDetailPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir orçamento #{shortId}?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
               Esta ação não pode ser desfeita. Todos os itens do orçamento serão removidos permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]"
               onClick={handleDelete}
               disabled={deleting}
             >

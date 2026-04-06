@@ -107,6 +107,7 @@
   @apply border-border bg-input text-foreground placeholder:text-muted-foreground;
   @apply focus:border-neon-green focus:ring-1 focus:ring-neon-green/50;
   @apply transition-all duration-200;
+  font-size: 16px; /* prevent iOS auto-zoom */
 }
 
 .neon-button {
@@ -115,16 +116,33 @@
   color: #000000;
   border: none;
   @apply hover:opacity-90 transition-opacity;
-  @apply px-6 py-2 rounded-sm;
+  @apply px-6 rounded-sm;
+  min-height: 44px; /* touch target */
 }
 
 .neon-button-outline {
   @apply font-semibold uppercase tracking-wider;
   @apply border border-neon-green text-neon-green bg-transparent;
   @apply hover:bg-neon-green/10 transition-colors;
-  @apply px-4 py-2 rounded-sm;
+  @apply px-4 rounded-sm;
+  min-height: 44px; /* touch target */
 }
 
 .neon-glow {
   box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green-dark);
+}
+
+/* Mobile fullscreen dialogs */
+@media (max-width: 639px) {
+  .dialog-mobile-fullscreen {
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+  }
 }

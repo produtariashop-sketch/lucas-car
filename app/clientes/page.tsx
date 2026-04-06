@@ -73,7 +73,6 @@ export default function ClientsPage() {
 
   async function remove() {
     if (!deleteId) return
-    // Check for linked quotes
     const { count } = await supabase
       .from('orcamentos')
       .select('id', { count: 'exact', head: true })
@@ -92,16 +91,18 @@ export default function ClientsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
               Clien<span className="text-neon-green">tes</span>
             </h1>
-            <p className="mt-1 text-sm text-metallic-silver">Gerencie sua base de clientes</p>
+            <p className="mt-0.5 text-sm text-metallic-silver">Gerencie sua base de clientes</p>
           </div>
-          <Button className="neon-button" onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" /> Novo Cliente
+          <Button className="neon-button shrink-0" onClick={openAdd}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            <span className="hidden sm:inline">Novo Cliente</span>
+            <span className="sm:hidden">Novo</span>
           </Button>
         </div>
 
@@ -122,37 +123,38 @@ export default function ClientsPage() {
         ) : filtered.length === 0 ? (
           <p className="text-center text-sm text-metallic-silver py-12">Nenhum cliente encontrado.</p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 md:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map(c => (
-              <div key={c.id} className="neon-card group">
+              <div key={c.id} className="neon-card">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-neon-green/30 bg-neon-green/10">
-                      <Users className="h-6 w-6 text-neon-green" />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="shrink-0 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-neon-green/30 bg-neon-green/10">
+                      <Users className="h-5 w-5 md:h-6 md:w-6 text-neon-green" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-foreground">{c.nome}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-foreground truncate">{c.nome}</h3>
                       {c.cpf_cnpj && <p className="text-xs text-metallic-silver">{c.cpf_cnpj}</p>}
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)}>
+                  {/* Always visible on mobile (no opacity-0) */}
+                  <div className="shrink-0 flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => openEdit(c)}>
                       <Pencil className="h-4 w-4 text-metallic-silver" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteId(c.id)}>
+                    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setDeleteId(c.id)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
-                <div className="mt-4 space-y-2">
+                <div className="mt-3 space-y-2">
                   {c.telefone && (
-                    <div className="flex items-center gap-2 text-sm text-metallic-silver">
-                      <Phone className="h-4 w-4" /> {c.telefone}
-                    </div>
+                    <a href={`tel:${c.telefone}`} className="flex items-center gap-2 text-sm text-metallic-silver hover:text-foreground transition-colors">
+                      <Phone className="h-4 w-4 shrink-0" /> {c.telefone}
+                    </a>
                   )}
                   {c.email && (
                     <div className="flex items-center gap-2 text-sm text-metallic-silver">
-                      <Mail className="h-4 w-4" /> {c.email}
+                      <Mail className="h-4 w-4 shrink-0" /> <span className="truncate">{c.email}</span>
                     </div>
                   )}
                   {c.endereco && (
@@ -167,7 +169,7 @@ export default function ClientsPage() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <DialogHeader>
             <DialogTitle className="text-foreground uppercase tracking-wide">
               {editId ? 'Editar Cliente' : 'Novo Cliente'}
@@ -181,7 +183,7 @@ export default function ClientsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-metallic-silver">Telefone</Label>
-                <Input className="neon-input" value={form.telefone ?? ''} onChange={e => setForm(f => ({ ...f, telefone: e.target.value }))} />
+                <Input className="neon-input" type="tel" value={form.telefone ?? ''} onChange={e => setForm(f => ({ ...f, telefone: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label className="text-metallic-silver">CPF / CNPJ</Label>
@@ -197,9 +199,9 @@ export default function ClientsPage() {
               <Input className="neon-input" value={form.endereco ?? ''} onChange={e => setForm(f => ({ ...f, endereco: e.target.value }))} />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" className="neon-button-outline" onClick={() => setDialog(false)}>Cancelar</Button>
-            <Button className="neon-button" onClick={save} disabled={saving}>
+          <DialogFooter className="flex-row gap-3 mt-2">
+            <Button variant="outline" className="neon-button-outline flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
+            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
             </Button>
           </DialogFooter>
@@ -208,16 +210,16 @@ export default function ClientsPage() {
 
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir cliente?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
               Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90" onClick={remove}>
+          <AlertDialogFooter className="flex-row gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]" onClick={remove}>
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

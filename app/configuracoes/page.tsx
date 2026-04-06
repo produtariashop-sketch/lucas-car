@@ -139,9 +139,9 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
             Configura<span className="text-neon-green">ções</span>
           </h1>
           <p className="mt-1 text-sm text-metallic-silver">Personalize o sistema</p>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button className="neon-button" onClick={saveEmpresa} disabled={saving}>
+            <Button className="neon-button w-full sm:w-auto" onClick={saveEmpresa} disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Salvar Dados
             </Button>
@@ -247,7 +247,7 @@ export default function SettingsPage() {
             <Shield className="h-5 w-5 text-neon-green" />
             <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">Alterar PIN de Acesso</h2>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3 max-w-lg">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 max-w-lg">
             <div className="space-y-2">
               <Label className="text-metallic-silver">PIN Atual</Label>
               <div className="relative">
@@ -292,7 +292,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button className="neon-button" onClick={savePin} disabled={savingPin}>
+            <Button className="neon-button w-full sm:w-auto" onClick={savePin} disabled={savingPin}>
               {savingPin && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Alterar PIN
             </Button>

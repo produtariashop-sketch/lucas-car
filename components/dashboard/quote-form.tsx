@@ -221,21 +221,19 @@ export function QuoteForm({ orcamentoId }: QuoteFormProps = {}) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
-            {isEditing ? (
-              <>Editar <span className="text-neon-green">Orçamento</span></>
-            ) : (
-              <>Novo <span className="text-neon-green">Orçamento</span></>
-            )}
-          </h1>
-          <p className="mt-1 text-sm text-metallic-silver">
-            {new Date().toLocaleDateString('pt-BR')}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
+          {isEditing ? (
+            <>Editar <span className="text-neon-green">Orçamento</span></>
+          ) : (
+            <>Novo <span className="text-neon-green">Orçamento</span></>
+          )}
+        </h1>
+        <p className="mt-1 text-sm text-metallic-silver">
+          {new Date().toLocaleDateString('pt-BR')}
+        </p>
       </div>
 
       {/* Cliente */}
@@ -374,7 +372,7 @@ export function QuoteForm({ orcamentoId }: QuoteFormProps = {}) {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <div className="w-full max-w-xs space-y-2 rounded-sm border border-neon-green/30 bg-neon-green/5 p-4">
+          <div className="w-full md:max-w-xs space-y-2 rounded-sm border border-neon-green/30 bg-neon-green/5 p-4">
             <div className="flex justify-between text-sm">
               <span className="text-metallic-silver">Subtotal:</span>
               <span className="font-semibold">{fmt(subtotal)}</span>
@@ -436,11 +434,11 @@ export function QuoteForm({ orcamentoId }: QuoteFormProps = {}) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" className="neon-button-outline" onClick={() => router.back()}>
+      <div className="flex gap-3">
+        <Button variant="outline" className="neon-button-outline flex-1 md:flex-none" onClick={() => router.back()}>
           Cancelar
         </Button>
-        <Button className="neon-button px-8" onClick={handleSave} disabled={saving}>
+        <Button className="neon-button flex-1 md:flex-none md:px-8" onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {isEditing ? 'Atualizar Orçamento' : 'Salvar Orçamento'}
         </Button>

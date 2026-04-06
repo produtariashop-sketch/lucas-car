@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { FileText, Search, Filter, Plus, Loader2, Trash2 } from "lucide-react"
+import { FileText, Search, Filter, Plus, Loader2, Trash2, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -90,21 +90,24 @@ export default function QuotesPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold uppercase tracking-wider text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
               Orça<span className="text-neon-green">mentos</span>
             </h1>
-            <p className="mt-1 text-sm text-metallic-silver">Gerencie todos os seus orçamentos</p>
+            <p className="mt-0.5 text-sm text-metallic-silver">Gerencie todos os seus orçamentos</p>
           </div>
           <Link href="/orcamento">
             <Button className="neon-button">
-              <Plus className="mr-2 h-4 w-4" /> Novo Orçamento
+              <Plus className="mr-1.5 h-4 w-4" />
+              <span className="hidden sm:inline">Novo Orçamento</span>
+              <span className="sm:hidden">Novo</span>
             </Button>
           </Link>
         </div>
 
+        {/* Filters */}
         <div className="neon-card">
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
@@ -132,98 +135,139 @@ export default function QuotesPage() {
           </div>
         </div>
 
-        <div className="neon-card">
-          {loading ? (
-            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
-          ) : filtered.length === 0 ? (
-            <p className="text-center text-sm text-metallic-silver py-8">Nenhum orçamento encontrado.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    {['ID', 'Cliente', 'Veículo', 'Data', 'Valor', 'Status', ''].map(h => (
-                      <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver last:text-right">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filtered.map(o => {
-                    const cli = (o as any).clientes
-                    const vei = (o as any).veiculos
-                    return (
-                      <tr key={o.id} className="group hover:bg-secondary/50 transition-colors">
-                        <td
-                          className="py-4 text-xs font-mono text-neon-green cursor-pointer"
-                          onClick={() => router.push(`/orcamentos/${o.id}`)}
-                        >
-                          {o.id.slice(0, 8).toUpperCase()}
-                        </td>
-                        <td
-                          className="py-4 text-sm text-foreground cursor-pointer"
-                          onClick={() => router.push(`/orcamentos/${o.id}`)}
-                        >
-                          {cli?.nome ?? '—'}
-                        </td>
-                        <td
-                          className="py-4 text-sm text-metallic-silver cursor-pointer"
-                          onClick={() => router.push(`/orcamentos/${o.id}`)}
-                        >
-                          {vei ? `${vei.marca} ${vei.modelo} ${vei.ano ?? ''}`.trim() : '—'}
-                        </td>
-                        <td
-                          className="py-4 text-sm text-metallic-silver cursor-pointer"
-                          onClick={() => router.push(`/orcamentos/${o.id}`)}
-                        >
-                          {new Date(o.created_at).toLocaleDateString('pt-BR')}
-                        </td>
-                        <td
-                          className="py-4 text-sm font-semibold text-foreground cursor-pointer"
-                          onClick={() => router.push(`/orcamentos/${o.id}`)}
-                        >
-                          {fmt(Number(o.valor_total))}
-                        </td>
-                        <td className="py-4" onClick={e => e.stopPropagation()}>
-                          <Select
-                            value={o.status}
-                            onValueChange={v => updateStatus(o.id, v)}
-                            disabled={updatingStatus === o.id}
-                          >
-                            <SelectTrigger className={`h-7 w-32 border-0 px-2 text-xs font-semibold uppercase rounded-sm ${STATUS_STYLES[o.status] ?? STATUS_STYLES.pendente}`}>
-                              {updatingStatus === o.id
-                                ? <Loader2 className="h-3 w-3 animate-spin" />
-                                : <SelectValue />
-                              }
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                                <SelectItem key={val} value={val}>{label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </td>
-                        <td className="py-4 text-right" onClick={e => e.stopPropagation()}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => setDeleteId(o.id)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                          </Button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+        {loading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-sm text-metallic-silver py-12">Nenhum orçamento encontrado.</p>
+        ) : (
+          <>
+            {/* Desktop table */}
+            <div className="neon-card hidden md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      {['ID', 'Cliente', 'Veículo', 'Data', 'Valor', 'Status', ''].map(h => (
+                        <th key={h} className="pb-3 text-left text-xs font-semibold uppercase tracking-wider text-metallic-silver last:text-right">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filtered.map(o => {
+                      const cli = (o as any).clientes
+                      const vei = (o as any).veiculos
+                      return (
+                        <tr key={o.id} className="group hover:bg-secondary/50 transition-colors">
+                          <td className="py-4 text-xs font-mono text-neon-green cursor-pointer" onClick={() => router.push(`/orcamentos/${o.id}`)}>
+                            {o.id.slice(0, 8).toUpperCase()}
+                          </td>
+                          <td className="py-4 text-sm text-foreground cursor-pointer" onClick={() => router.push(`/orcamentos/${o.id}`)}>
+                            {cli?.nome ?? '—'}
+                          </td>
+                          <td className="py-4 text-sm text-metallic-silver cursor-pointer" onClick={() => router.push(`/orcamentos/${o.id}`)}>
+                            {vei ? `${vei.marca} ${vei.modelo} ${vei.ano ?? ''}`.trim() : '—'}
+                          </td>
+                          <td className="py-4 text-sm text-metallic-silver cursor-pointer" onClick={() => router.push(`/orcamentos/${o.id}`)}>
+                            {new Date(o.created_at).toLocaleDateString('pt-BR')}
+                          </td>
+                          <td className="py-4 text-sm font-semibold text-foreground cursor-pointer" onClick={() => router.push(`/orcamentos/${o.id}`)}>
+                            {fmt(Number(o.valor_total))}
+                          </td>
+                          <td className="py-4" onClick={e => e.stopPropagation()}>
+                            <Select value={o.status} onValueChange={v => updateStatus(o.id, v)} disabled={updatingStatus === o.id}>
+                              <SelectTrigger className={`h-7 w-32 border-0 px-2 text-xs font-semibold uppercase rounded-sm ${STATUS_STYLES[o.status] ?? STATUS_STYLES.pendente}`}>
+                                {updatingStatus === o.id
+                                  ? <Loader2 className="h-3 w-3 animate-spin" />
+                                  : <SelectValue />
+                                }
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                                  <SelectItem key={val} value={val}>{label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="py-4 text-right" onClick={e => e.stopPropagation()}>
+                            <Button
+                              variant="ghost" size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => setDeleteId(o.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {filtered.map(o => {
+                const cli = (o as any).clientes
+                const vei = (o as any).veiculos
+                return (
+                  <div key={o.id} className="neon-card">
+                    <div className="flex items-start justify-between gap-2">
+                      <button
+                        className="flex-1 min-w-0 text-left"
+                        onClick={() => router.push(`/orcamentos/${o.id}`)}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-mono text-neon-green">{o.id.slice(0, 8).toUpperCase()}</span>
+                          <span className={`inline-flex rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase ${STATUS_STYLES[o.status] ?? STATUS_STYLES.pendente}`}>
+                            {STATUS_LABELS[o.status] ?? o.status}
+                          </span>
+                        </div>
+                        <p className="font-bold text-foreground truncate">{cli?.nome ?? '—'}</p>
+                        <p className="text-sm text-metallic-silver truncate">
+                          {vei ? `${vei.marca} ${vei.modelo} ${vei.ano ?? ''}`.trim() : '—'}
+                        </p>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-xs text-metallic-silver">{new Date(o.created_at).toLocaleDateString('pt-BR')}</span>
+                          <span className="text-base font-bold text-foreground">{fmt(Number(o.valor_total))}</span>
+                        </div>
+                      </button>
+                      <div className="shrink-0 flex flex-col gap-2 items-end">
+                        <ChevronRight className="h-4 w-4 text-metallic-silver" />
+                        <button
+                          className="p-2 rounded-sm text-destructive hover:bg-destructive/10 active:bg-destructive/20"
+                          onClick={() => setDeleteId(o.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    {/* Mobile status selector */}
+                    <div className="mt-3 pt-3 border-t border-border" onClick={e => e.stopPropagation()}>
+                      <Select value={o.status} onValueChange={v => updateStatus(o.id, v)} disabled={updatingStatus === o.id}>
+                        <SelectTrigger className={`h-9 w-full border-0 px-3 text-xs font-semibold uppercase rounded-sm ${STATUS_STYLES[o.status] ?? STATUS_STYLES.pendente}`}>
+                          {updatingStatus === o.id
+                            ? <Loader2 className="h-3 w-3 animate-spin" />
+                            : <SelectValue />
+                          }
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                            <SelectItem key={val} value={val}>{label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen sm:dialog-mobile-fullscreen-reset">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir orçamento?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
@@ -232,7 +276,7 @@ export default function QuotesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90" onClick={remove}>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 min-h-[44px]" onClick={remove}>
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
