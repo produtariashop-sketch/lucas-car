@@ -440,17 +440,17 @@ export default function OrcamentoDetailPage() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-safe max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir orçamento #{shortId}?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
               Esta ação não pode ser desfeita. Todos os itens do orçamento serão removidos permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row gap-3">
-            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border w-full sm:w-auto">Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]"
+              className="bg-destructive text-white hover:bg-destructive/90 w-full sm:w-auto min-h-[44px]"
               onClick={handleDelete}
               disabled={deleting}
             >

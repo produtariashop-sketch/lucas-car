@@ -417,17 +417,17 @@ export default function ClientsPage() {
 
       {/* Delete Confirm */}
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border mx-4 rounded-sm w-[calc(100vw-2rem)] max-w-md">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-safe max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir cliente?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
               Esta ação não pode ser desfeita. Os veículos vinculados também serão excluídos.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row gap-3">
-            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border w-full sm:w-auto">Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]"
+              className="bg-destructive text-white hover:bg-destructive/90 w-full sm:w-auto min-h-[44px]"
               onClick={remove}
             >
               Excluir

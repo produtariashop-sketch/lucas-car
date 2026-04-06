@@ -237,7 +237,7 @@ export default function VehiclesPage() {
       </div>
 
       <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogContent className="bg-card border-border dialog-mobile-fullscreen">
+        <DialogContent className="bg-card border-border dialog-mobile-safe max-w-md">
           <DialogHeader>
             <DialogTitle className="text-foreground uppercase tracking-wide">
               {editId ? 'Editar Veículo' : 'Novo Veículo'}
@@ -276,9 +276,9 @@ export default function VehiclesPage() {
               <Input className="neon-input" value={form.cor} onChange={e => setForm(f => ({ ...f, cor: e.target.value }))} />
             </div>
           </div>
-          <DialogFooter className="flex-row gap-3 mt-2">
-            <Button variant="outline" className="neon-button-outline flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
-            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
+          <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-3 mt-2">
+            <Button variant="outline" className="neon-button-outline w-full sm:flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
+            <Button className="neon-button w-full sm:flex-1" onClick={save} disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
             </Button>
           </DialogFooter>
@@ -286,14 +286,14 @@ export default function VehiclesPage() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-safe max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir veículo?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">Esta ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row gap-3">
-            <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]" onClick={remove}>Excluir</AlertDialogAction>
+          <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border w-full sm:w-auto">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 w-full sm:w-auto min-h-[44px]" onClick={remove}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

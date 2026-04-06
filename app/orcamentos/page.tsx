@@ -267,16 +267,16 @@ export default function QuotesPage() {
       </div>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen sm:dialog-mobile-fullscreen-reset">
+        <AlertDialogContent className="bg-card border-border dialog-mobile-safe max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir orçamento?</AlertDialogTitle>
             <AlertDialogDescription className="text-metallic-silver">
               Esta ação não pode ser desfeita. Todos os itens do orçamento serão removidos.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="neon-button-outline border-border">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 min-h-[44px]" onClick={remove}>
+          <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-3">
+            <AlertDialogCancel className="neon-button-outline border-border w-full sm:w-auto">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 w-full sm:w-auto min-h-[44px]" onClick={remove}>
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -133,18 +133,11 @@
   box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green-dark);
 }
 
-/* Mobile fullscreen dialogs */
+/* Constrains dialog/alert width on mobile without breaking Radix centering */
 @media (max-width: 639px) {
-  .dialog-mobile-fullscreen {
-    left: 0 !important;
-    top: 0 !important;
-    transform: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    border-radius: 0 !important;
-    overflow-y: auto !important;
+  .dialog-mobile-safe {
+    width: calc(100vw - 2rem) !important;
+    max-width: calc(100vw - 2rem) !important;
   }
 }
 

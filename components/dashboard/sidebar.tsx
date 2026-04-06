@@ -26,13 +26,14 @@ const navItems = [
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ]
 
-// Subset shown in mobile bottom nav (most important 5)
+// 6 items in mobile bottom nav — Veículos accessible inside Clientes
 const mobileNavItems = [
-  { href: "/", label: "Home", icon: LayoutDashboard },
-  { href: "/orcamentos", label: "Orçamentos", icon: FileText },
-  { href: "/orcamento", label: "Novo", icon: FilePlus, primary: true },
-  { href: "/servicos", label: "Serviços", icon: Wrench },
-  { href: "/clientes", label: "Clientes", icon: Users },
+  { href: "/",              label: "Home",       icon: LayoutDashboard },
+  { href: "/orcamentos",    label: "Orçamentos", icon: FileText },
+  { href: "/orcamento",     label: "Novo",       icon: FilePlus, primary: true },
+  { href: "/servicos",      label: "Serviços",   icon: Wrench },
+  { href: "/clientes",      label: "Clientes",   icon: Users },
+  { href: "/configuracoes", label: "Config",     icon: Settings },
 ]
 
 export function Sidebar() {
@@ -103,7 +104,7 @@ export function Sidebar() {
 
       {/* ── Mobile bottom nav ── */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-border bg-sidebar">
-        <div className="flex items-stretch">
+        <div className="grid grid-cols-6 items-stretch">
           {mobileNavItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -111,7 +112,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-1 flex-col items-center justify-center gap-1 py-2 min-h-[56px] transition-colors",
+                  "flex flex-col items-center justify-center gap-0.5 py-2 min-h-[52px] transition-colors",
                   item.primary
                     ? isActive
                       ? "bg-neon-green/20 text-neon-green"
@@ -122,11 +123,11 @@ export function Sidebar() {
                 )}
               >
                 <item.icon className={cn(
-                  "h-5 w-5",
+                  "h-4 w-4 shrink-0",
                   item.primary && "drop-shadow-[0_0_6px_#00ff00]"
                 )} />
                 <span className={cn(
-                  "text-[10px] font-semibold uppercase tracking-wide leading-none",
+                  "text-[9px] font-semibold uppercase tracking-tight leading-none text-center w-full px-0.5",
                   item.primary && "text-neon-green"
                 )}>
                   {item.label}
