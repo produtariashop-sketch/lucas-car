@@ -31,8 +31,8 @@ const mobileNavItems = [
   { href: "/", label: "Home", icon: LayoutDashboard },
   { href: "/orcamentos", label: "Orçamentos", icon: FileText },
   { href: "/orcamento", label: "Novo", icon: FilePlus, primary: true },
+  { href: "/servicos", label: "Serviços", icon: Wrench },
   { href: "/clientes", label: "Clientes", icon: Users },
-  { href: "/configuracoes", label: "Config", icon: Settings },
 ]
 
 export function Sidebar() {

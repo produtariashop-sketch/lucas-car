@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from "@/components/ui/dialog"
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
+} from "@/components/ui/sheet"
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -26,7 +26,7 @@ const fmt = (v: number) =>
 export default function ServicosPage() {
   const [servicos, setServicos] = useState<Servico[]>([])
   const [loading, setLoading] = useState(true)
-  const [dialog, setDialog] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [editId, setEditId] = useState<string | null>(null)
@@ -43,7 +43,7 @@ export default function ServicosPage() {
   function openAdd() {
     setForm(emptyForm)
     setEditId(null)
-    setDialog(true)
+    setSheetOpen(true)
   }
 
   function openEdit(s: Servico) {
@@ -55,7 +55,7 @@ export default function ServicosPage() {
       ativo: s.ativo,
     })
     setEditId(s.id)
-    setDialog(true)
+    setSheetOpen(true)
   }
 
   async function save() {
@@ -74,7 +74,7 @@ export default function ServicosPage() {
     setSaving(false)
     if (error) { toast.error('Erro ao salvar serviço'); return }
     toast.success(editId ? 'Serviço atualizado' : 'Serviço adicionado')
-    setDialog(false)
+    setSheetOpen(false)
     load()
   }
 
@@ -96,7 +96,7 @@ export default function ServicosPage() {
   return (
     <DashboardLayout>
       <div className="space-y-4 md:space-y-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider text-foreground">
               Servi<span className="text-neon-green">ços</span>
@@ -111,7 +111,9 @@ export default function ServicosPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-neon-green" /></div>
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-neon-green" />
+          </div>
         ) : servicos.length === 0 ? (
           <p className="text-center text-sm text-metallic-silver py-12">Nenhum serviço cadastrado.</p>
         ) : (
@@ -210,51 +212,103 @@ export default function ServicosPage() {
         )}
       </div>
 
-      <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogContent className="bg-card border-border dialog-mobile-fullscreen">
-          <DialogHeader>
-            <DialogTitle className="text-foreground uppercase tracking-wide">
+      {/* Sheet — Add / Edit */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-lg bg-card border-border flex flex-col p-0 gap-0"
+        >
+          <SheetHeader className="border-b border-border px-4 py-3 shrink-0">
+            <SheetTitle className="text-foreground uppercase tracking-wide text-base">
               {editId ? 'Editar Serviço' : 'Novo Serviço'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
             <div className="space-y-2">
-              <Label className="text-metallic-silver">Nome *</Label>
-              <Input className="neon-input" value={form.nome} onChange={e => setForm(f => ({ ...f, nome: e.target.value }))} />
+              <Label className="text-metallic-silver text-sm">Nome *</Label>
+              <Input
+                className="neon-input w-full"
+                value={form.nome}
+                onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
+              />
             </div>
             <div className="space-y-2">
-              <Label className="text-metallic-silver">Descrição</Label>
-              <Textarea className="neon-input resize-none" value={form.descricao} onChange={e => setForm(f => ({ ...f, descricao: e.target.value }))} />
+              <Label className="text-metallic-silver text-sm">Descrição</Label>
+              <Textarea
+                className="neon-input resize-none w-full"
+                value={form.descricao}
+                onChange={e => setForm(f => ({ ...f, descricao: e.target.value }))}
+              />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-metallic-silver">Valor Padrão (R$)</Label>
-                <Input className="neon-input" type="number" min="0" step="0.01" value={form.valor_padrao} onChange={e => setForm(f => ({ ...f, valor_padrao: e.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-metallic-silver">Prazo (dias)</Label>
-                <Input className="neon-input" type="number" min="1" value={form.prazo_dias} onChange={e => setForm(f => ({ ...f, prazo_dias: e.target.value }))} />
-              </div>
+            <div className="space-y-2">
+              <Label className="text-metallic-silver text-sm">Valor Padrão (R$)</Label>
+              <Input
+                className="neon-input w-full"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.valor_padrao}
+                onChange={e => setForm(f => ({ ...f, valor_padrao: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-metallic-silver text-sm">Prazo estimado (dias)</Label>
+              <Input
+                className="neon-input w-full"
+                type="number"
+                min="1"
+                value={form.prazo_dias}
+                onChange={e => setForm(f => ({ ...f, prazo_dias: e.target.value }))}
+              />
+            </div>
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-metallic-silver text-sm">Status</Label>
+              <button
+                onClick={() => setForm(f => ({ ...f, ativo: !f.ativo }))}
+                className="flex items-center gap-2 min-h-[44px] px-2"
+              >
+                {form.ativo ? (
+                  <><ToggleRight className="h-6 w-6 text-neon-green" /><span className="text-sm text-neon-green font-semibold">Ativo</span></>
+                ) : (
+                  <><ToggleLeft className="h-6 w-6 text-metallic-silver" /><span className="text-sm text-metallic-silver">Inativo</span></>
+                )}
+              </button>
             </div>
           </div>
-          <DialogFooter className="flex-row gap-3 mt-2">
-            <Button variant="outline" className="neon-button-outline flex-1" onClick={() => setDialog(false)}>Cancelar</Button>
-            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
+
+          <SheetFooter className="border-t border-border px-4 py-3 shrink-0 flex-row gap-3">
+            <Button
+              variant="outline"
+              className="neon-button-outline flex-1"
+              onClick={() => setSheetOpen(false)}
+            >
+              Cancelar
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <Button className="neon-button flex-1" onClick={save} disabled={saving}>
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Salvar
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       <AlertDialog open={!!deleteId} onOpenChange={open => !open && setDeleteId(null)}>
-        <AlertDialogContent className="bg-card border-border dialog-mobile-fullscreen">
+        <AlertDialogContent className="bg-card border-border mx-4 rounded-sm w-[calc(100vw-2rem)] max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">Excluir serviço?</AlertDialogTitle>
-            <AlertDialogDescription className="text-metallic-silver">Esta ação não pode ser desfeita.</AlertDialogDescription>
+            <AlertDialogDescription className="text-metallic-silver">
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-row gap-3">
             <AlertDialogCancel className="neon-button-outline border-border flex-1">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]" onClick={remove}>Excluir</AlertDialogAction>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90 flex-1 min-h-[44px]"
+              onClick={remove}
+            >
+              Excluir
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
