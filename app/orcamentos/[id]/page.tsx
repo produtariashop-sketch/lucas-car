@@ -145,8 +145,27 @@ export default function OrcamentoDetailPage() {
         import("@react-pdf/renderer"),
         import("@/components/dashboard/orcamento-pdf"),
       ])
+
+      // Pre-fetch logo as base64 so @react-pdf/renderer doesn't hit CORS
+      let pdfConfig = config
+      if (config?.logo_url) {
+        try {
+          const res = await fetch(config.logo_url)
+          const imgBlob = await res.blob()
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result as string)
+            reader.onerror = reject
+            reader.readAsDataURL(imgBlob)
+          })
+          pdfConfig = { ...config, logo_url: base64 }
+        } catch {
+          // keep original URL on fetch failure
+        }
+      }
+
       const blob = await pdf(
-        <OrcamentoPDF orcamento={orcamento} itens={itens} config={config} />
+        <OrcamentoPDF orcamento={orcamento} itens={itens} config={pdfConfig} />
       ).toBlob()
       const url = URL.createObjectURL(blob)
       const link = document.createElement("a")

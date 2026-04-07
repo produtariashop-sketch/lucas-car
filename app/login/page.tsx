@@ -54,8 +54,7 @@ export default function LoginPage() {
       const hashed = await hashPin(pin)
       const { data, error: dbError } = await supabase
         .from("config")
-        .select("value")
-        .eq("key", "pin_hash")
+        .select("pin_hash")
         .single()
 
       if (dbError || !data) {
@@ -65,7 +64,7 @@ export default function LoginPage() {
         return
       }
 
-      if (data.value === hashed) {
+      if (data.pin_hash === hashed) {
         setAuthToken()
         router.push("/")
       } else {
